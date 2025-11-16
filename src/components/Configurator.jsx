@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const MODULES = [
   { key: 'sales', label: 'Sales' },
@@ -15,6 +15,7 @@ function Configurator() {
   const [enabled, setEnabled] = useState(['sales', 'inventory'])
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState('')
+  const [createdId, setCreatedId] = useState('')
 
   const baseUrl = useMemo(() => import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000', [])
 
@@ -26,14 +27,28 @@ function Configurator() {
     setCreating(true)
     setMessage('')
     try {
+      const key = localStorage.getItem('apiKey') || ''
       const res = await fetch(`${baseUrl}/api/companies`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
         body: JSON.stringify({ name: companyName, industry, country, modules: enabled })
       })
-      if (!res.ok) throw new Error('Failed to create company')
+      if (!res.ok) throw new Error('Failed to create company (check API key)')
       const data = await res.json()
+      setCreatedId(data.id)
       setMessage(`Created company with id ${data.id}. Modules saved.`)
+
+      // Wire module toggles
+      await Promise.all(
+        MODULES.map(async (m) => {
+          const toggled = enabled.includes(m.key)
+          await fetch(`${baseUrl}/api/modules/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
+            body: JSON.stringify({ company_id: data.id, name: m.key, enabled: toggled })
+          })
+        })
+      )
     } catch (e) {
       setMessage(e.message)
     } finally {
@@ -82,6 +97,7 @@ function Configurator() {
                 {creating ? 'Saving...' : 'Save and continue'}
               </button>
               {message && <p className="mt-3 text-sm text-gray-700">{message}</p>}
+              {createdId && <p className="mt-1 text-xs text-gray-500">Company ID: {createdId}</p>}
             </div>
           </div>
         </div>
