@@ -1,26 +1,36 @@
-import { useState } from 'react'
+import Hero from './components/Hero'
+import Features from './components/Features'
+import Configurator from './components/Configurator'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
+    <div className="min-h-screen bg-white">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <a href="/" className="text-xl font-bold text-gray-900">Flames ERP</a>
+          <nav className="hidden md:flex items-center gap-6 text-sm text-gray-700">
+            <a href="#get-started" className="hover:text-red-600">Get started</a>
+            <a href="/test" className="hover:text-red-600">Status</a>
+            <a href="#features" className="hover:text-red-600">Features</a>
+          </nav>
+          <a href="#get-started" className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-white font-medium shadow hover:bg-red-700 transition-colors">
+            Try it now
+          </a>
         </div>
-      </div>
+      </header>
+
+      <main>
+        <Hero />
+        <div id="features"><Features /></div>
+        <Configurator />
+      </main>
+
+      <footer className="border-t">
+        <div className="max-w-7xl mx-auto px-6 py-8 text-sm text-gray-600 flex items-center justify-between">
+          <p>© {new Date().getFullYear()} Flames • Global Management Platform</p>
+          <a href="/test" className="hover:text-red-600">Backend status</a>
+        </div>
+      </footer>
     </div>
   )
 }
